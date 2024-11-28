@@ -282,26 +282,28 @@ end
     Calculate G excess
 """
 @generated function get_Gex!(ph::solution_phase{n_ox, n_sf, n_eq, n_em}) where {n_ox, n_sf, n_eq, n_em}
-
     quote 
         a = SMatrix(ph.v_E)
         b = SVector(ph.p)
         c = SVector(ph.W)
 
         # @inbounds for i=1:n_em
-        Base.@nexprs $n_em i -> begin
-            @inline 
-            it    = 1
-            Gex_v = zero(eltype(a))
+        x = Base.@ntuple $n_em i -> begin
+            @inline
+            it = 1
+            v  = zero(eltype(a))
+            aᵢ = a[i,:]
             for j=1:$n_em-1
-                tmp = a[i,j] - b[j]
+                tmp = aᵢ[j] - b[j]
                 for k=j+1:$n_em
-                    @inbounds Gex_v -= tmp*(a[i,k]-b[k])*c[it]
+                    @inbounds v = @muladd v - tmp*(aᵢ[k]-b[k])*c[it]
                     it += 1
                 end
             end
-            @inbounds ph.Gex[i]  = Gex_v;
+            v
         end
+        ph.Gex .= x
+
         return nothing
     end
 end
