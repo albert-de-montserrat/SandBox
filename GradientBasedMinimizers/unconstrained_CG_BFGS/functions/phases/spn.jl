@@ -249,8 +249,8 @@ end
     Computes partial derivative of endmember fraction as function of site fraction
 """
 @fastmath function get_dpdsf!(ph::solution_phase)
-    x = ph.sf
-    T = eltype(x)
+    x   = SVector(ph.sf)
+    T   = eltype(x)
     # constants 
     c1  = @muladd (2*x[6] + x[2])/(3*(2*x[6] + x[2] + 2*x[5] + x[1])^2)
     c21 = @muladd (3*(2*x[6] + x[2] + 2*x[5] + x[1]))
@@ -259,15 +259,21 @@ end
     c6  = @muladd (2*x[8] + x[4])
     c4  = @muladd c6/(3*(2*x[7] + x[3] + 2*x[8] + x[4])^2)
     c5  = @muladd (3*(2*x[7] + x[3] + 2*x[8] + x[4]))
+    c7  = 2*x[10]
+    c8  = 4*x[10]
+    c9  = x[9]*c4
+    c10 = x[9]/c5
+    c11 = 8*x[10]*c1
+    c12 = 8*x[10]*c4
     # fill
-    ph.dpdsf[1,1] = 2*x[10]*c1 + c1 + 2/3;   ph.dpdsf[1,2] = 2*x[10]*c1 - 2*c2 + c1 - 1/c21;          ph.dpdsf[1,3] = zero(T);                        ph.dpdsf[1,4] = zero(T);                                                              ph.dpdsf[1,5] = 4*x[10]*c1 + 2*c1 - 2/3;      ph.dpdsf[1,6] = 4*x[10]*c1 - 4*c2 + 2*c1 - 2/c21;      ph.dpdsf[1,7] = zero(T);      ph.dpdsf[1,8] = zero(T);      ph.dpdsf[1,9] = -1;      ph.dpdsf[1,10] = -2*c3 - 4/3;      
-    ph.dpdsf[2,1] = 4*x[10]*c1 + 2*c1 - 2/3; ph.dpdsf[2,2] = 4*x[10]*c1 - 4*c2 + 2*c1 - 2/c21;        ph.dpdsf[2,3] = zero(T);                        ph.dpdsf[2,4] = zero(T);                                                              ph.dpdsf[2,5] = 8*x[10]*c1 + 4*c1 + 2/3;      ph.dpdsf[2,6] = 8*x[10]*c1 - 8*c2 + 4*c1 - 4/c21;      ph.dpdsf[2,7] = zero(T);      ph.dpdsf[2,8] = zero(T);      ph.dpdsf[2,9] = zero(T);      ph.dpdsf[2,10] = -4*c3 - 2/3;      
-    ph.dpdsf[3,1] = -2*x[10]*c1 - c1;        ph.dpdsf[3,2] = -2*x[10]*c1 + 2*c2 - c1 + 2/3 + 1/c21;   ph.dpdsf[3,3] = -x[9]*c4 - 2*x[10]*c4 + c4;     ph.dpdsf[3,4] = -x[9]*c4 + x[9]/c5 - 2*x[10]*c4 + 2*x[10]/c5 + c4 + 2/3 - 1/c5;       ph.dpdsf[3,5] = -4*x[10]*c1 - 2*c1;      ph.dpdsf[3,6] = -4*x[10]*c1 + 4*c2 - 2*c1 - 2/3 + 2/c21;      ph.dpdsf[3,7] = -2*x[9]*c4 - 4*x[10]*c4 + 2*c4;      ph.dpdsf[3,8] = -2*x[9]*c4 + 2*x[9]/c5 - 4*x[10]*c4 + 4*x[10]/c5 + 2*c4 - 2/3 - 2/c5;      ph.dpdsf[3,9] = c6/c5;      ph.dpdsf[3,10] = 2*c6/c5 + 2*c3;      
-    ph.dpdsf[4,1] = -4*x[10]*c1 - 2*c1;      ph.dpdsf[4,2] = -4*x[10]*c1 + 4*c2 - 2*c1 - 2/3 + 2/c21; ph.dpdsf[4,3] = -2*x[9]*c4 - 4*x[10]*c4 + 2*c4; ph.dpdsf[4,4] = -2*x[9]*c4 + 2*x[9]/c5 - 4*x[10]*c4 + 4*x[10]/c5 + 2*c4 - 2/3 - 2/c5; ph.dpdsf[4,5] = -8*x[10]*c1 - 4*c1;      ph.dpdsf[4,6] = -8*x[10]*c1 + 8*c2 - 4*c1 + 2/3 + 4/c21;      ph.dpdsf[4,7] = -4*x[9]*c4 - 8*x[10]*c4 + 4*c4;      ph.dpdsf[4,8] = -4*x[9]*c4 + 4*x[9]/c5 - 8*x[10]*c4 + 8*x[10]/c5 + 4*c4 + 2/3 - 4/c5;      ph.dpdsf[4,9] = 2*c6/c5;      ph.dpdsf[4,10] = 4*c6/c5 + 4*c3;      
-    ph.dpdsf[5,1] = zero(T);                 ph.dpdsf[5,2] = zero(T);                                 ph.dpdsf[5,3] = x[9]*c4 + 2*x[10]*c4 - c4;      ph.dpdsf[5,4] = x[9]*c4 - x[9]/c5 + 2*x[10]*c4 - 2*x[10]/c5 - c4 - 2/3 + 1/c5;        ph.dpdsf[5,5] = zero(T);      ph.dpdsf[5,6] = zero(T);      ph.dpdsf[5,7] = 2*x[9]*c4 + 4*x[10]*c4 - 2*c4;      ph.dpdsf[5,8] = 2*x[9]*c4 - 2*x[9]/c5 + 4*x[10]*c4 - 4*x[10]/c5 - 2*c4 + 2/3 + 2/c5;      ph.dpdsf[5,9] = -c6/c5;      ph.dpdsf[5,10] = -2*c6/c5;      
-    ph.dpdsf[6,1] = zero(T);                 ph.dpdsf[6,2] = zero(T);                                 ph.dpdsf[6,3] = 2*x[9]*c4 + 4*x[10]*c4 - 2*c4;  ph.dpdsf[6,4] = 2*x[9]*c4 - 2*x[9]/c5 + 4*x[10]*c4 - 4*x[10]/c5 - 2*c4 + 2/3 + 2/c5;  ph.dpdsf[6,5] = zero(T);      ph.dpdsf[6,6] = zero(T);      ph.dpdsf[6,7] = 4*x[9]*c4 + 8*x[10]*c4 - 4*c4;      ph.dpdsf[6,8] = 4*x[9]*c4 - 4*x[9]/c5 + 8*x[10]*c4 - 8*x[10]/c5 - 4*c4 - 2/3 + 4/c5;      ph.dpdsf[6,9] = -2*c6/c5;      ph.dpdsf[6,10] = -4*c6/c5;      
-    ph.dpdsf[7,1] = zero(T);                 ph.dpdsf[7,2] = zero(T);                                 ph.dpdsf[7,3] = zero(T);                        ph.dpdsf[7,4] = zero(T);                                                              ph.dpdsf[7,5] = zero(T);      ph.dpdsf[7,6] = zero(T);      ph.dpdsf[7,7] = zero(T);      ph.dpdsf[7,8] = zero(T);      ph.dpdsf[7,9] = one(T);      ph.dpdsf[7,10] = zero(T);      
-    ph.dpdsf[8,1] = zero(T);                 ph.dpdsf[8,2] = zero(T);                                 ph.dpdsf[8,3] = zero(T);                        ph.dpdsf[8,4] = zero(T);                                                              ph.dpdsf[8,5] = zero(T);      ph.dpdsf[8,6] = zero(T);      ph.dpdsf[8,7] = zero(T);      ph.dpdsf[8,8] = zero(T);      ph.dpdsf[8,9] = zero(T);      ph.dpdsf[8,10] = T(2);  
+    ph.dpdsf[1,1] = c7*c1 + c1 + 2/3;   ph.dpdsf[1,2] = c7*c1 - 2*c2 + c1 - 1/c21;          ph.dpdsf[1,3] = zero(T);              ph.dpdsf[1,4] = zero(T);                                           ph.dpdsf[1,5] = c8*c1 + 2*c1 - 2/3; ph.dpdsf[1,6] = c8*c1 - 4*c2 + 2*c1 - 2/c21;         ph.dpdsf[1,7] = zero(T);              ph.dpdsf[1,8] = zero(T);      ph.dpdsf[1,9] = -1;      ph.dpdsf[1,10] = -2*c3 - 4/3;      
+    ph.dpdsf[2,1] = c8*c1 + 2*c1 - 2/3; ph.dpdsf[2,2] = c8*c1 - 4*c2 + 2*c1 - 2/c21;        ph.dpdsf[2,3] = zero(T);              ph.dpdsf[2,4] = zero(T);                                           ph.dpdsf[2,5] = c11 + 4*c1 + 2/3;   ph.dpdsf[2,6] = c11 - 8*c2 + 4*c1 - 4/c21;           ph.dpdsf[2,7] = zero(T);              ph.dpdsf[2,8] = zero(T);      ph.dpdsf[2,9] = zero(T);      ph.dpdsf[2,10] = -4*c3 - 2/3;      
+    ph.dpdsf[3,1] = -c7*c1 - c1;        ph.dpdsf[3,2] = -c7*c1 + 2*c2 - c1 + 2/3 + 1/c21;   ph.dpdsf[3,3] = -c9 - c7*c4 + c4;     ph.dpdsf[3,4] = -c9 + c10 - c7*c4 + c7/c5 + c4 + 2/3 - 1/c5;       ph.dpdsf[3,5] = -c8*c1 - 2*c1;      ph.dpdsf[3,6] = -c8*c1 + 4*c2 - 2*c1 - 2/3 + 2/c21;  ph.dpdsf[3,7] = -2*c9 - c8*c4 + 2*c4; ph.dpdsf[3,8] = -2*c9 + 2*c10 - c8*c4 + c8/c5 + 2*c4 - 2/3 - 2/c5;      ph.dpdsf[3,9] = c6/c5;      ph.dpdsf[3,10] = 2*c6/c5 + 2*c3;      
+    ph.dpdsf[4,1] = -c8*c1 - 2*c1;      ph.dpdsf[4,2] = -c8*c1 + 4*c2 - 2*c1 - 2/3 + 2/c21; ph.dpdsf[4,3] = -2*c9 - c8*c4 + 2*c4; ph.dpdsf[4,4] = -2*c9 + 2*c10 - c8*c4 + c8/c5 + 2*c4 - 2/3 - 2/c5; ph.dpdsf[4,5] = -c11 - 4*c1;        ph.dpdsf[4,6] = -c11 + 8*c2 - 4*c1 + 2/3 + 4/c21;    ph.dpdsf[4,7] = -4*c9 - c12 + 4*c4;   ph.dpdsf[4,8] = -4*c9 + 4*c10 - c12 + 8*x[10]/c5 + 4*c4 + 2/3 - 4/c5;      ph.dpdsf[4,9] = 2*c6/c5;      ph.dpdsf[4,10] = 4*c6/c5 + 4*c3;      
+    ph.dpdsf[5,1] = zero(T);            ph.dpdsf[5,2] = zero(T);                            ph.dpdsf[5,3] = c9 + c7*c4 - c4;      ph.dpdsf[5,4] = c9 - c10 + c7*c4 - c7/c5 - c4 - 2/3 + 1/c5;        ph.dpdsf[5,5] = zero(T);            ph.dpdsf[5,6] = zero(T);                             ph.dpdsf[5,7] = 2*c9 + c8*c4 - 2*c4;  ph.dpdsf[5,8] = 2*c9 - 2*c10 + c8*c4 - c8/c5 - 2*c4 + 2/3 + 2/c5;      ph.dpdsf[5,9] = -c6/c5;      ph.dpdsf[5,10] = -2*c6/c5;      
+    ph.dpdsf[6,1] = zero(T);            ph.dpdsf[6,2] = zero(T);                            ph.dpdsf[6,3] = 2*c9 + c8*c4 - 2*c4;  ph.dpdsf[6,4] = 2*c9 - 2*c10 + c8*c4 - c8/c5 - 2*c4 + 2/3 + 2/c5;  ph.dpdsf[6,5] = zero(T);            ph.dpdsf[6,6] = zero(T);                             ph.dpdsf[6,7] = 4*c9 + c12 - 4*c4;    ph.dpdsf[6,8] = 4*c9 - 4*c10 + c12 - 8*x[10]/c5 - 4*c4 - 2/3 + 4/c5;      ph.dpdsf[6,9] = -2*c6/c5;      ph.dpdsf[6,10] = -4*c6/c5;      
+    ph.dpdsf[7,1] = zero(T);            ph.dpdsf[7,2] = zero(T);                            ph.dpdsf[7,3] = zero(T);              ph.dpdsf[7,4] = zero(T);                                           ph.dpdsf[7,5] = zero(T);            ph.dpdsf[7,6] = zero(T);                             ph.dpdsf[7,7] = zero(T);              ph.dpdsf[7,8] = zero(T);      ph.dpdsf[7,9] = one(T);      ph.dpdsf[7,10] = zero(T);      
+    ph.dpdsf[8,1] = zero(T);            ph.dpdsf[8,2] = zero(T);                            ph.dpdsf[8,3] = zero(T);              ph.dpdsf[8,4] = zero(T);                                           ph.dpdsf[8,5] = zero(T);            ph.dpdsf[8,6] = zero(T);                             ph.dpdsf[8,7] = zero(T);              ph.dpdsf[8,8] = zero(T);      ph.dpdsf[8,9] = zero(T);      ph.dpdsf[8,10] = T(2);  
 
     return nothing
 end
@@ -433,8 +439,8 @@ function compute_G_dG!(gm,ph::solution_phase{n_ox, n_sf, n_eq, n_em},gv) where {
     #   rest of routine: ~300 ns
 
     # Compute raw and normalized Gibbs energy
-    ph.Graw   .= ph.mu'*ph.p;
-    ph.G      .= ph.Graw[1]*ph.f[1];
+    ph.Graw   .= ph.mu ⋅ ph.p;
+    ph.G      .= ph.Graw[1] * ph.f[1];
 
     # compute first derivatives
     ph.v_nem  .= (ph.mu .- ph.df .*ph.Graw).*ph.f;
